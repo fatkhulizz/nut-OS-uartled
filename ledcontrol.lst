@@ -1,0 +1,460 @@
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 1
+
+
+   1               		.file	"ledcontrol.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.section	.text.led_on,"ax",@progbits
+   9               	.global	led_on
+  10               		.type	led_on, @function
+  11               	led_on:
+  12 0000 CF92      		push r12
+  13 0002 DF92      		push r13
+  14 0004 EF92      		push r14
+  15 0006 FF92      		push r15
+  16 0008 0F93      		push r16
+  17 000a 1F93      		push r17
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20 000c 6B01      		movw r12,r22
+  21 000e 98B3      		in r25,56-32
+  22 0010 08E0      		ldi r16,lo8(8)
+  23 0012 10E0      		ldi r17,hi8(8)
+  24 0014 00C0      		rjmp 2f
+  25 0016 000F      	1:	lsl r16
+  26 0018 111F      		rol r17
+  27 001a 8A95      	2:	dec r24
+  28 001c 02F4      		brpl 1b
+  29 001e 902B      		or r25,r16
+  30 0020 98BB      		out 56-32,r25
+  31 0022 EE24      		clr r14
+  32 0024 D7FC      		sbrc r13,7
+  33 0026 E094      		com r14
+  34 0028 FE2C      		mov r15,r14
+  35 002a C701      		movw r24,r14
+  36 002c B601      		movw r22,r12
+  37 002e 0E94 0000 		call NutSleep
+  38 0032 88B3      		in r24,56-32
+  39 0034 0095      		com r16
+  40 0036 0823      		and r16,r24
+  41 0038 08BB      		out 56-32,r16
+  42 003a C701      		movw r24,r14
+  43 003c B601      		movw r22,r12
+  44 003e 0E94 0000 		call NutSleep
+  45               	/* epilogue start */
+  46 0042 1F91      		pop r17
+  47 0044 0F91      		pop r16
+  48 0046 FF90      		pop r15
+  49 0048 EF90      		pop r14
+  50 004a DF90      		pop r13
+  51 004c CF90      		pop r12
+  52 004e 0895      		ret
+  53               		.size	led_on, .-led_on
+  54               		.data
+  55               	.LC0:
+  56 0000 7561 7274 		.string	"uart0"
+  56      3000 
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 2
+
+
+  57               	.LC1:
+  58 0006 722B 00   		.string	"r+"
+  59               		.section	.text.InitUART1,"ax",@progbits
+  60               	.global	InitUART1
+  61               		.type	InitUART1, @function
+  62               	InitUART1:
+  63               	/* prologue: function */
+  64               	/* frame size = 0 */
+  65 0000 8B9A      		sbi 49-32,3
+  66 0002 8A98      		cbi 49-32,2
+  67 0004 82B3      		in r24,50-32
+  68 0006 8C60      		ori r24,lo8(12)
+  69 0008 82BB      		out 50-32,r24
+  70 000a 80E0      		ldi r24,lo8(devUsartAvr0)
+  71 000c 90E0      		ldi r25,hi8(devUsartAvr0)
+  72 000e 60E0      		ldi r22,lo8(0)
+  73 0010 70E0      		ldi r23,hi8(0)
+  74 0012 40E0      		ldi r20,lo8(0)
+  75 0014 0E94 0000 		call NutRegisterDevice
+  76 0018 80E0      		ldi r24,lo8(.LC0)
+  77 001a 90E0      		ldi r25,hi8(.LC0)
+  78 001c 60E0      		ldi r22,lo8(.LC1)
+  79 001e 70E0      		ldi r23,hi8(.LC1)
+  80 0020 0E94 0000 		call fopen
+  81 0024 9093 0000 		sts (uart)+1,r25
+  82 0028 8093 0000 		sts uart,r24
+  83 002c 0E94 0000 		call _fileno
+  84 0030 61E0      		ldi r22,lo8(257)
+  85 0032 71E0      		ldi r23,hi8(257)
+  86 0034 40E0      		ldi r20,lo8(baud)
+  87 0036 50E0      		ldi r21,hi8(baud)
+  88 0038 0E94 0000 		call _ioctl
+  89               	/* epilogue start */
+  90 003c 0895      		ret
+  91               		.size	InitUART1, .-InitUART1
+  92               		.data
+  93               	.LC2:
+  94 0009 0D0A 3D20 		.string	"\r\n= Welcome to RemLab K2 =\r\n"
+  94      5765 6C63 
+  94      6F6D 6520 
+  94      746F 2052 
+  94      656D 4C61 
+  95               	.LC3:
+  96 0026 456E 7465 		.string	"Enter your command:"
+  96      7220 796F 
+  96      7572 2063 
+  96      6F6D 6D61 
+  96      6E64 3A00 
+  97               	.LC4:
+  98 003a 2573 0D0A 		.string	"%s\r\n"
+  98      00
+  99               	.LC5:
+ 100 003f 2000      		.string	" "
+ 101               	.LC6:
+ 102 0041 2564 00   		.string	"%d"
+ 103               		.section	.text.NutAppMain,"ax",@progbits
+ 104               	.global	NutAppMain
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 3
+
+
+ 105               		.type	NutAppMain, @function
+ 106               	NutAppMain:
+ 107 0000 2F92      		push r2
+ 108 0002 3F92      		push r3
+ 109 0004 4F92      		push r4
+ 110 0006 5F92      		push r5
+ 111 0008 6F92      		push r6
+ 112 000a 7F92      		push r7
+ 113 000c 8F92      		push r8
+ 114 000e 9F92      		push r9
+ 115 0010 AF92      		push r10
+ 116 0012 BF92      		push r11
+ 117 0014 CF92      		push r12
+ 118 0016 DF92      		push r13
+ 119 0018 EF92      		push r14
+ 120 001a FF92      		push r15
+ 121 001c 0F93      		push r16
+ 122 001e 1F93      		push r17
+ 123 0020 DF93      		push r29
+ 124 0022 CF93      		push r28
+ 125 0024 CDB7      		in r28,__SP_L__
+ 126 0026 DEB7      		in r29,__SP_H__
+ 127 0028 A697      		sbiw r28,38
+ 128 002a 0FB6      		in __tmp_reg__,__SREG__
+ 129 002c F894      		cli
+ 130 002e DEBF      		out __SP_H__,r29
+ 131 0030 0FBE      		out __SREG__,__tmp_reg__
+ 132 0032 CDBF      		out __SP_L__,r28
+ 133               	/* prologue: function */
+ 134               	/* frame size = 38 */
+ 135 0034 87B3      		in r24,55-32
+ 136 0036 806F      		ori r24,lo8(-16)
+ 137 0038 87BB      		out 55-32,r24
+ 138 003a 18BA      		out 56-32,__zero_reg__
+ 139 003c 0E94 0000 		call InitUART1
+ 140 0040 40E0      		ldi r20,lo8(inbuf)
+ 141 0042 842E      		mov r8,r20
+ 142 0044 40E0      		ldi r20,hi8(inbuf)
+ 143 0046 942E      		mov r9,r20
+ 144 0048 37E0      		ldi r19,lo8(7)
+ 145 004a A32E      		mov r10,r19
+ 146 004c B12C      		mov r11,__zero_reg__
+ 147 004e AC0E      		add r10,r28
+ 148 0050 BD1E      		adc r11,r29
+ 149 0052 20E0      		ldi r18,lo8(.LC6)
+ 150 0054 C22E      		mov r12,r18
+ 151 0056 20E0      		ldi r18,hi8(.LC6)
+ 152 0058 D22E      		mov r13,r18
+ 153 005a 1E01      		movw r2,r28
+ 154 005c 0894      		sec
+ 155 005e 211C      		adc r2,__zero_reg__
+ 156 0060 311C      		adc r3,__zero_reg__
+ 157 0062 93E0      		ldi r25,lo8(3)
+ 158 0064 492E      		mov r4,r25
+ 159 0066 512C      		mov r5,__zero_reg__
+ 160 0068 4C0E      		add r4,r28
+ 161 006a 5D1E      		adc r5,r29
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 4
+
+
+ 162 006c 85E0      		ldi r24,lo8(5)
+ 163 006e 682E      		mov r6,r24
+ 164 0070 712C      		mov r7,__zero_reg__
+ 165 0072 6C0E      		add r6,r28
+ 166 0074 7D1E      		adc r7,r29
+ 167               	.L14:
+ 168 0076 6091 0000 		lds r22,uart
+ 169 007a 7091 0000 		lds r23,(uart)+1
+ 170 007e 80E0      		ldi r24,lo8(.LC2)
+ 171 0080 90E0      		ldi r25,hi8(.LC2)
+ 172 0082 0E94 0000 		call fputs
+ 173 0086 6091 0000 		lds r22,uart
+ 174 008a 7091 0000 		lds r23,(uart)+1
+ 175 008e 80E0      		ldi r24,lo8(.LC3)
+ 176 0090 90E0      		ldi r25,hi8(.LC3)
+ 177 0092 0E94 0000 		call fputs
+ 178 0096 8091 0000 		lds r24,uart
+ 179 009a 9091 0000 		lds r25,(uart)+1
+ 180 009e 0E94 0000 		call fflush
+ 181 00a2 4091 0000 		lds r20,uart
+ 182 00a6 5091 0000 		lds r21,(uart)+1
+ 183 00aa 80E0      		ldi r24,lo8(inbuf)
+ 184 00ac 90E0      		ldi r25,hi8(inbuf)
+ 185 00ae 62E3      		ldi r22,lo8(50)
+ 186 00b0 70E0      		ldi r23,hi8(50)
+ 187 00b2 0E94 0000 		call fgets
+ 188 00b6 00D0      		rcall .
+ 189 00b8 00D0      		rcall .
+ 190 00ba 00D0      		rcall .
+ 191 00bc EDB7      		in r30,__SP_L__
+ 192 00be FEB7      		in r31,__SP_H__
+ 193 00c0 3196      		adiw r30,1
+ 194 00c2 8091 0000 		lds r24,uart
+ 195 00c6 9091 0000 		lds r25,(uart)+1
+ 196 00ca ADB7      		in r26,__SP_L__
+ 197 00cc BEB7      		in r27,__SP_H__
+ 198 00ce 1296      		adiw r26,1+1
+ 199 00d0 9C93      		st X,r25
+ 200 00d2 8E93      		st -X,r24
+ 201 00d4 1197      		sbiw r26,1
+ 202 00d6 80E0      		ldi r24,lo8(.LC4)
+ 203 00d8 90E0      		ldi r25,hi8(.LC4)
+ 204 00da 9383      		std Z+3,r25
+ 205 00dc 8283      		std Z+2,r24
+ 206 00de 9582      		std Z+5,r9
+ 207 00e0 8482      		std Z+4,r8
+ 208 00e2 0E94 0000 		call fprintf
+ 209 00e6 ADB7      		in r26,__SP_L__
+ 210 00e8 BEB7      		in r27,__SP_H__
+ 211 00ea 1696      		adiw r26,6
+ 212 00ec 0FB6      		in __tmp_reg__,__SREG__
+ 213 00ee F894      		cli
+ 214 00f0 BEBF      		out __SP_H__,r27
+ 215 00f2 0FBE      		out __SREG__,__tmp_reg__
+ 216 00f4 ADBF      		out __SP_L__,r26
+ 217 00f6 C401      		movw r24,r8
+ 218 00f8 6AE0      		ldi r22,lo8(10)
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 5
+
+
+ 219 00fa 70E0      		ldi r23,hi8(10)
+ 220 00fc 0E94 0000 		call strchr
+ 221 0100 FC01      		movw r30,r24
+ 222 0102 0097      		sbiw r24,0
+ 223 0104 01F0      		breq .L6
+ 224 0106 1082      		st Z,__zero_reg__
+ 225               	.L6:
+ 226 0108 F501      		movw r30,r10
+ 227 010a 80E2      		ldi r24,lo8(32)
+ 228 010c 1192      		st Z+,__zero_reg__
+ 229 010e 8A95      	        dec r24
+ 230 0110 01F4      		brne .-6
+ 231 0112 8501      		movw r16,r10
+ 232 0114 EE24      		clr r14
+ 233 0116 FF24      		clr r15
+ 234               	.L10:
+ 235 0118 E114      		cp r14,__zero_reg__
+ 236 011a F104      		cpc r15,__zero_reg__
+ 237 011c 01F0      		breq .L7
+ 238 011e 80E0      		ldi r24,lo8(0)
+ 239 0120 90E0      		ldi r25,hi8(0)
+ 240 0122 00C0      		rjmp .L8
+ 241               	.L7:
+ 242 0124 80E0      		ldi r24,lo8(inbuf)
+ 243 0126 90E0      		ldi r25,hi8(inbuf)
+ 244               	.L8:
+ 245 0128 60E0      		ldi r22,lo8(.LC5)
+ 246 012a 70E0      		ldi r23,hi8(.LC5)
+ 247 012c 0E94 0000 		call strtok
+ 248 0130 D801      		movw r26,r16
+ 249 0132 8D93      		st X+,r24
+ 250 0134 9C93      		st X,r25
+ 251 0136 892B      		or r24,r25
+ 252 0138 01F0      		breq .L9
+ 253 013a 0894      		sec
+ 254 013c E11C      		adc r14,__zero_reg__
+ 255 013e F11C      		adc r15,__zero_reg__
+ 256 0140 0E5F      		subi r16,lo8(-(2))
+ 257 0142 1F4F      		sbci r17,hi8(-(2))
+ 258 0144 B0E1      		ldi r27,lo8(16)
+ 259 0146 EB16      		cp r14,r27
+ 260 0148 F104      		cpc r15,__zero_reg__
+ 261 014a 01F4      		brne .L10
+ 262               	.L9:
+ 263 014c E8EE      		ldi r30,lo8(1000)
+ 264 014e F3E0      		ldi r31,hi8(1000)
+ 265 0150 FC83      		std Y+4,r31
+ 266 0152 EB83      		std Y+3,r30
+ 267 0154 81E0      		ldi r24,lo8(1)
+ 268 0156 90E0      		ldi r25,hi8(1)
+ 269 0158 9E83      		std Y+6,r25
+ 270 015a 8D83      		std Y+5,r24
+ 271 015c 00D0      		rcall .
+ 272 015e 00D0      		rcall .
+ 273 0160 00D0      		rcall .
+ 274 0162 EDB7      		in r30,__SP_L__
+ 275 0164 FEB7      		in r31,__SP_H__
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 6
+
+
+ 276 0166 3196      		adiw r30,1
+ 277 0168 8F81      		ldd r24,Y+7
+ 278 016a 9885      		ldd r25,Y+8
+ 279 016c ADB7      		in r26,__SP_L__
+ 280 016e BEB7      		in r27,__SP_H__
+ 281 0170 1296      		adiw r26,1+1
+ 282 0172 9C93      		st X,r25
+ 283 0174 8E93      		st -X,r24
+ 284 0176 1197      		sbiw r26,1
+ 285 0178 D382      		std Z+3,r13
+ 286 017a C282      		std Z+2,r12
+ 287 017c 3582      		std Z+5,r3
+ 288 017e 2482      		std Z+4,r2
+ 289 0180 0E94 0000 		call sscanf
+ 290 0184 EDB7      		in r30,__SP_L__
+ 291 0186 FEB7      		in r31,__SP_H__
+ 292 0188 3696      		adiw r30,6
+ 293 018a 0FB6      		in __tmp_reg__,__SREG__
+ 294 018c F894      		cli
+ 295 018e FEBF      		out __SP_H__,r31
+ 296 0190 0FBE      		out __SREG__,__tmp_reg__
+ 297 0192 EDBF      		out __SP_L__,r30
+ 298 0194 E114      		cp r14,__zero_reg__
+ 299 0196 F104      		cpc r15,__zero_reg__
+ 300 0198 01F0      		breq .L11
+ 301 019a 00D0      		rcall .
+ 302 019c 00D0      		rcall .
+ 303 019e 00D0      		rcall .
+ 304 01a0 EDB7      		in r30,__SP_L__
+ 305 01a2 FEB7      		in r31,__SP_H__
+ 306 01a4 3196      		adiw r30,1
+ 307 01a6 8985      		ldd r24,Y+9
+ 308 01a8 9A85      		ldd r25,Y+10
+ 309 01aa ADB7      		in r26,__SP_L__
+ 310 01ac BEB7      		in r27,__SP_H__
+ 311 01ae 1296      		adiw r26,1+1
+ 312 01b0 9C93      		st X,r25
+ 313 01b2 8E93      		st -X,r24
+ 314 01b4 1197      		sbiw r26,1
+ 315 01b6 D382      		std Z+3,r13
+ 316 01b8 C282      		std Z+2,r12
+ 317 01ba 5582      		std Z+5,r5
+ 318 01bc 4482      		std Z+4,r4
+ 319 01be 0E94 0000 		call sscanf
+ 320 01c2 EDB7      		in r30,__SP_L__
+ 321 01c4 FEB7      		in r31,__SP_H__
+ 322 01c6 3696      		adiw r30,6
+ 323 01c8 0FB6      		in __tmp_reg__,__SREG__
+ 324 01ca F894      		cli
+ 325 01cc FEBF      		out __SP_H__,r31
+ 326 01ce 0FBE      		out __SREG__,__tmp_reg__
+ 327 01d0 EDBF      		out __SP_L__,r30
+ 328 01d2 F1E0      		ldi r31,lo8(1)
+ 329 01d4 EF16      		cp r14,r31
+ 330 01d6 F104      		cpc r15,__zero_reg__
+ 331 01d8 01F0      		breq .L11
+ 332 01da 00D0      		rcall .
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 7
+
+
+ 333 01dc 00D0      		rcall .
+ 334 01de 00D0      		rcall .
+ 335 01e0 EDB7      		in r30,__SP_L__
+ 336 01e2 FEB7      		in r31,__SP_H__
+ 337 01e4 3196      		adiw r30,1
+ 338 01e6 8B85      		ldd r24,Y+11
+ 339 01e8 9C85      		ldd r25,Y+12
+ 340 01ea ADB7      		in r26,__SP_L__
+ 341 01ec BEB7      		in r27,__SP_H__
+ 342 01ee 1296      		adiw r26,1+1
+ 343 01f0 9C93      		st X,r25
+ 344 01f2 8E93      		st -X,r24
+ 345 01f4 1197      		sbiw r26,1
+ 346 01f6 D382      		std Z+3,r13
+ 347 01f8 C282      		std Z+2,r12
+ 348 01fa 7582      		std Z+5,r7
+ 349 01fc 6482      		std Z+4,r6
+ 350 01fe 0E94 0000 		call sscanf
+ 351 0202 EDB7      		in r30,__SP_L__
+ 352 0204 FEB7      		in r31,__SP_H__
+ 353 0206 3696      		adiw r30,6
+ 354 0208 0FB6      		in __tmp_reg__,__SREG__
+ 355 020a F894      		cli
+ 356 020c FEBF      		out __SP_H__,r31
+ 357 020e 0FBE      		out __SREG__,__tmp_reg__
+ 358 0210 EDBF      		out __SP_L__,r30
+ 359               	.L11:
+ 360 0212 00E0      		ldi r16,lo8(0)
+ 361 0214 10E0      		ldi r17,hi8(0)
+ 362 0216 00C0      		rjmp .L12
+ 363               	.L17:
+ 364 0218 6B81      		ldd r22,Y+3
+ 365 021a 7C81      		ldd r23,Y+4
+ 366 021c 8981      		ldd r24,Y+1
+ 367 021e 9A81      		ldd r25,Y+2
+ 368 0220 0E94 0000 		call led_on
+ 369 0224 0F5F      		subi r16,lo8(-(1))
+ 370 0226 1F4F      		sbci r17,hi8(-(1))
+ 371               	.L12:
+ 372 0228 8D81      		ldd r24,Y+5
+ 373 022a 9E81      		ldd r25,Y+6
+ 374 022c 0817      		cp r16,r24
+ 375 022e 1907      		cpc r17,r25
+ 376 0230 04F0      		brlt .+2
+ 377 0232 00C0      		rjmp .L14
+ 378 0234 00C0      		rjmp .L17
+ 379               		.size	NutAppMain, .-NutAppMain
+ 380               	.global	baud
+ 381               		.data
+ 382               		.type	baud, @object
+ 383               		.size	baud, 4
+ 384               	baud:
+ 385 0044 80        		.byte	-128
+ 386 0045 25        		.byte	37
+ 387 0046 00        		.byte	0
+ 388 0047 00        		.byte	0
+ 389               		.lcomm inbuf,50
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 8
+
+
+ 390               		.comm uart,2,1
+ 391               	.global __do_copy_data
+ 392               	.global __do_clear_bss
+GAS LISTING C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ledcontrol.c
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:2      *ABS*:0000003f __SREG__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:5      *ABS*:00000034 __CCP__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:11     .text.led_on:00000000 led_on
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:62     .text.InitUART1:00000000 InitUART1
+                            *COM*:00000002 uart
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:384    .data:00000044 baud
+C:\Users\Lenovo\AppData\Local\Temp/ccI34yn1.s:106    .text.NutAppMain:00000000 NutAppMain
+                             .bss:00000000 inbuf
+
+UNDEFINED SYMBOLS
+NutSleep
+devUsartAvr0
+NutRegisterDevice
+fopen
+_fileno
+_ioctl
+fputs
+fflush
+fgets
+fprintf
+strchr
+strtok
+sscanf
+__do_copy_data
+__do_clear_bss
